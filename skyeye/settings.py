@@ -55,10 +55,10 @@ INSTALLED_APPS.extend([
     'mission_device',
     # 3rd party app
     'drf_yasg',  # pip install drf_yasg
-    'rest_framework',  # pip install rest_framework
+    'rest_framework',  # pip install djangorestframework
     'rest_framework.authtoken',
     'django_eventstream',  # pip install django_eventstream
-    'bootstrap4',  # pip install django-bootstrap4
+    # 'bootstrap4',  # pip install django-bootstrap4
 ])
 
 MIDDLEWARE = [
