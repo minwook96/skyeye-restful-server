@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from rest_framework.authtoken.views import obtain_auth_token
 from .views import homescreen_view
 
 schema_view = get_schema_view(
@@ -37,13 +38,14 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api-auth/", include('rest_framework.urls')),
+    # path("api-auth/", include('rest_framework.urls')),
+    path('api-token-auth/', obtain_auth_token),
     # 이 아랫 부분은 우리가 사용하는 app들의 URL들을 넣습니다.
-    path('', homescreen_view, name='home'),
+    # path('', homescreen_view, name='home'),
     path("", include("sse.urls")),
     path("", include("mission_device.urls")),
     path("", include("winch.urls")),
-    path("", include("account.urls")),
+    path("", include("accounts.urls")),
 
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
@@ -51,5 +53,4 @@ urlpatterns += [
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r"^swagger/$", schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r"^redoc/$", schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc-v1'),
-
 ]

@@ -7,6 +7,7 @@ class WinchSerializer(serializers.ModelSerializer):
         model = Winch
         fields = '__all__'
 
+
 class WinchDataLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WinchDataLog

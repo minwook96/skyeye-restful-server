@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from django_eventstream.utils import have_channels
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,24 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Application definition
-AUTH_USER_MODEL = 'account.Account'
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.AllowAllUsersModelBackend',
-    'account.backends.CaseInsensitiveModelBackend',
-    )
+AUTH_USER_MODEL = 'accounts.User'
+
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.AllowAllUsersModelBackend',
+#     'accounts.backends.CaseInsensitiveModelBackend',
+# )
 
 INSTALLED_APPS = [
-    # local app
-    'sse',
-    'account.apps.AccountConfig',
-    'winch',
-    'mission_device',
-    # 3rd party app
-    'drf_yasg',  # pip install drf_yasg
-    'channels',  # pip install channels
-    'rest_framework',  # pip install rest_framework
-    'django_eventstream',  # pip install django_eventstream
-    'bootstrap4',  # pip install django-bootstrap4
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -53,32 +44,42 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+if have_channels():
+    INSTALLED_APPS.append('channels')  # pip install channels
+
+INSTALLED_APPS.extend([
+    # local app
+    'sse',
+    'accounts',
+    'winch',
+    'mission_device',
+    # 3rd party app
+    'drf_yasg',  # pip install drf_yasg
+    'rest_framework',  # pip install rest_framework
+    'rest_framework.authtoken',
+    'django_eventstream',  # pip install django_eventstream
+    'bootstrap4',  # pip install django-bootstrap4
+])
+
 MIDDLEWARE = [
     'django_grip.GripMiddleware',  # add
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.BasicAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',  # 인증된 요청에 대해서만 view 호출
-    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',  # 비인증 요청에 대해서는 읽기만 허용
-    # ]
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    # ]
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 3,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # 인증된 요청에 대해서만 view 호출
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',  # 비인증 요청에 대해서는 읽기만 허용
+    ]
 }
 
 ROOT_URLCONF = "skyeye.urls"
@@ -100,7 +101,7 @@ TEMPLATES = [
 ]
 
 # # 로그인 성공후 이동하는 URL
-LOGIN_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/redoc'
 # # 로그아웃시 이동하는 URL
 # LOGOUT_REDIRECT_URL = '/users/login'
 

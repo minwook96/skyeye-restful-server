@@ -37,11 +37,11 @@ class Camera(models.Model):
 
 
 class MissiondeviceDataLog(models.Model):
-    missiondevice_data_log_id = models.AutoField(primary_key=True, help_text='auto increment PK')
+    missiondevice_data_log_id = models.AutoField(verbose_name='id', primary_key=True, help_text='auto increment PK')
     missiondevice_serial_number = models.ForeignKey(Missiondevice, models.DO_NOTHING,
                                                     db_column='missiondevice_serial_number', blank=True, null=True,
                                                     help_text='임무장치 일련번호')
-    date = models.DateTimeField(blank=True, null=True, help_text='날짜')
+    date = models.DateTimeField(blank=True, null=True, help_text='날짜', auto_now=True)
     latitude = models.FloatField(blank=True, null=True, help_text='위도')
     longitude = models.FloatField(blank=True, null=True, help_text='경도')
     kite_roll = models.FloatField(blank=True, null=True, help_text='카이트 Roll')
@@ -50,10 +50,10 @@ class MissiondeviceDataLog(models.Model):
     camera_roll = models.FloatField(blank=True, null=True, help_text='카메라 Roll')
     camera_pitch = models.FloatField(blank=True, null=True, help_text='카메라 Pitch')
     camera_yaw = models.FloatField(blank=True, null=True, help_text='카메라 Yaw')
-    pressure = models.IntegerField(blank=True, null=True, help_text='기압')
+    pressure = models.FloatField(blank=True, null=True, help_text='기압')
     temperature = models.FloatField(blank=True, null=True, help_text='온도')
     voltage = models.FloatField(blank=True, null=True, help_text='전압')
-    kite_helium_pressure = models.IntegerField(blank=True, null=True, help_text='카이트 내 헬륨 압력')
+    kite_helium_pressure = models.FloatField(blank=True, null=True, help_text='카이트 내 헬륨 압력')
     etc_senser = models.FloatField(blank=True, null=True, help_text='기타센서값')
     rssi = models.IntegerField(db_column='RSSI', blank=True, null=True,
                                help_text='무선통신 수신감도')  # Field name made lowercase.
