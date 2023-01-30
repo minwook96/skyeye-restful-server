@@ -15,11 +15,17 @@ def messages(request, channels_id):
         send_event('channels-{}'.format(channels_id), 'message', text)
         return HttpResponse(text, content_type='application/json')
     elif request.method == 'POST':
-        try:
+        try:  # Apache 에서 문제 발생 원인 파악 X
             access_token = request.headers['Authorization']
+            print(access_token)
             text = request.POST['text']
             print(text)
             send_event('channels-{}'.format(channels_id), 'message', text)
             return JsonResponse({'message': 'SEND_SUCCESS'}, status=status.HTTP_200_OK)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # text = request.POST['text']
+        # print(text)
+        # send_event('channels-{}'.format(channels_id), 'message', text)
+        # return JsonResponse({'message': 'SEND_SUCCESS'}, status=status.HTTP_200_OK)

@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework import viewsets  # get, post, put, delete를 코딩하지 않아도 자동적으로 처리해주는 클래스
+from rest_framework import viewsets
 from .models import *
 from .serializers import *
 from rest_framework.response import Response

@@ -7,8 +7,8 @@ class Winch(models.Model):
     primary_sensor = models.CharField(max_length=100, blank=True, null=True, help_text='기본 센서')
     extended_sensor = models.CharField(max_length=100, blank=True, null=True, help_text='확장 센서')
     tetherline_length = models.FloatField(blank=True, null=True, help_text='티더선 전체 길이')
-    tetherline_limit_tension = models.FloatField(blank=True, null=True, help_text='티더선의 한계 장력')
-    production_year = models.TextField(blank=True, null=True, help_text='제작 년도(1901-2155)')  # This field type is a guess.
+    tetherline_limit_tension = models.FloatField(blank=True, null=True, help_text='티더선 한계 장력')
+    production_year = models.TextField(blank=True, null=True, help_text='제작 년도(1901-2155)')
 
     class Meta:
         managed = False
@@ -31,12 +31,12 @@ class WinchDataLog(models.Model):
     tetherline_length = models.FloatField(blank=True, null=True, help_text='티더선 길이')
     tetherline_angle = models.FloatField(blank=True, null=True, help_text='티더선 각도')
     tetherline_tension = models.FloatField(blank=True, null=True, help_text='티더선 장력')
-    pressure = models.IntegerField(blank=True, null=True, help_text='무선통신 수신감도')
+    pressure = models.IntegerField(blank=True, null=True, help_text='무선통신 수신 감도')
     temperature = models.FloatField(blank=True, null=True, help_text='온도')
     wind_direction = models.CharField(max_length=100, blank=True, null=True, help_text='풍향')
     wind_speed = models.FloatField(blank=True, null=True, help_text='풍속')
     rain = models.IntegerField(blank=True, null=True, help_text='강우')
-    rssi = models.IntegerField(db_column='RSSI', blank=True, null=True, help_text='기압')  # Field name made lowercase.
+    rssi = models.IntegerField(db_column='RSSI', blank=True, null=True, help_text='기압')
 
     class Meta:
         managed = False
