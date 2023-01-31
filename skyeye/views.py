@@ -3,7 +3,9 @@ from rest_framework import viewsets
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
+import logging
 
+db_logger = logging.getLogger('db')
 
 # Create your views here.
 class SiteSerializer(viewsets.ModelViewSet):
@@ -17,10 +19,6 @@ class SiteSerializer(viewsets.ModelViewSet):
             print("사이트", serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
+            db_logger.exception(status.HTTP_400_BAD_REQUEST)
+
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def list(self, request, *args, **kwargs):
-        print(request.user)
-        print(request.auth)
-
-        return Response(status=status.HTTP_200_OK)

@@ -20,7 +20,7 @@ class CameraAdmin(admin.ModelAdmin):
 class MissiondeviceDataLogAdmin(admin.ModelAdmin):
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
-        'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'kite_roll', 'kite_pitch', 'kite_yaw',
+        'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw',
         'camera_roll', 'camera_pitch', 'camera_yaw', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
         'etc_senser', 'rssi', 'missiondevice_serial_number')
 

@@ -20,8 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-6ahgf-e=y(09gh3!gr2)hvmaphf$7nf8j@&^qg+ij!051m&yet"
-
+# with open('/etc/secret_key.txt') as f:
+with open('./secret_key.txt') as f:
+    SECRET_KEY = f.read().strip()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -57,6 +58,7 @@ INSTALLED_APPS.extend([
     'mission_device',
     'fire_detection',
     # 3rd party app
+    'django_db_logger',  # pip install django-db-logger
     'drf_yasg',  # pip install drf_yasg
     'rest_framework',  # pip install djangorestframework
     'rest_framework.authtoken',
@@ -103,6 +105,36 @@ TEMPLATES = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'db_log': {
+            'level': 'DEBUG',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
+        },
+    },
+    'loggers': {
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'DEBUG'
+        },
+        'django.request': {  # logging 500 errors to database
+            'handlers': ['db_log'],
+            'level': 'ERROR',
+            'propagate': False,
+        }
+    }
+}
+
 # # 로그인 성공후 이동하는 URL
 # LOGIN_REDIRECT_URL = '/redoc'
 # # 로그아웃시 이동하는 URL
@@ -110,6 +142,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "server.wsgi.application"
 ASGI_APPLICATION = "server.asgi.application"
+
+SESSION_COOKIE_AGE = 3600  # 초 단위로 세션 타임아웃 시간을 설정
+SESSION_SAVE_EVERY_REQUEST = True  # 사용자가 리퀘스트를 서버로 날릴 때마다 서버의 세션 정보와 클라이언트의 세션 정보를 갱신할 것인지를 설정
 
 EVENTSTREAM_STORAGE_CLASS = 'django_eventstream.storage.DjangoModelStorage'
 
@@ -166,7 +201,6 @@ STATICFILE_DIRS = (
     os.path.join(BASE_DIR, 'static')
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
