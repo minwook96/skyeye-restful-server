@@ -21,8 +21,6 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 from rest_framework.authtoken.views import obtain_auth_token
-from .views import *
-from django.conf.urls import handler400, handler403, handler404, handler500
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -59,7 +57,8 @@ urlpatterns += [
     re_path(r"^redoc/$", schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc-v1'),
 ]
 
-# handler400 = 'server.views.bad_request'
-# handler403 = defaults.permission_denied
-# handler404 = 'server.views.page_not_found'
-# handler500 = defaults.server_error
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+            re_path(r'^__debug__/', include(debug_toolbar.urls)),
+    ]

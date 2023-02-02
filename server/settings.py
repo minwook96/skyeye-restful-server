@@ -26,6 +26,8 @@ with open('./secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# APPEND_SLASH = False
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -58,6 +60,7 @@ INSTALLED_APPS.extend([
     'mission_device',
     'fire_detection',
     # 3rd party app
+    'debug_toolbar',  # pip install django-debug-toolbar
     'django_db_logger',  # pip install django-db-logger
     'drf_yasg',  # pip install drf_yasg
     'rest_framework',  # pip install djangorestframework
@@ -68,6 +71,7 @@ INSTALLED_APPS.extend([
 
 MIDDLEWARE = [
     'django_grip.GripMiddleware',  # add
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # add
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -76,6 +80,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+INTERNAL_IPS = ['127.0.0.1']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

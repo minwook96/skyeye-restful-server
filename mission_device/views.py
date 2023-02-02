@@ -52,10 +52,14 @@ class MissionDeviceDataLogViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            data = MissiondeviceDataLog.objects.last()
-            serializer = MissionDeviceDataLogSerializer(data)
-            # print("임무장비 데이터 GCS 전송", serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            name = request.GET['name']
+            if MissiondeviceDataLog.objects.filter(missiondevice_serial_number=name).exists():
+                data = MissiondeviceDataLog.objects.filter(missiondevice_serial_number=name).last()
+                serializer = MissionDeviceDataLogSerializer(data)
+                # print("임무장비 데이터 GCS 전송", serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)

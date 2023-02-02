@@ -23,6 +23,7 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
         'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw',
         'camera_roll', 'camera_pitch', 'camera_yaw', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
         'etc_senser', 'rssi', 'missiondevice_serial_number')
+    list_filter = ('missiondevice_serial_number', )
 
 
 admin.site.register(Missiondevice, MissiondeviceAdmin)

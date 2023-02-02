@@ -17,6 +17,7 @@ class WinchDataLogAdmin(admin.ModelAdmin):
         'main_power_electric_current', 'tetherline_electric_current', 'mechanical_brake_operation',
         'electronic_brake_operation', 'tetherline_length', 'tetherline_angle', 'tetherline_tension', 'pressure',
         'temperature', 'wind_direction', 'wind_speed', 'rain', 'rssi', 'winch_serial_number')
+    list_filter = ('winch_serial_number', )
 
 
 admin.site.register(Winch, WinchAdmin)
