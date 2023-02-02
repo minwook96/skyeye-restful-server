@@ -1,1 +1,9 @@
-waitress-serve --listen=*:8000 server.wsgi:application
+django-debug-toolbar
+django-db-logger
+drf_yasg
+djangorestframework
+django-eventstream
+Django
+Pillow
+channels
+gunicorn

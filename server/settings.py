@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 with open('./secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # APPEND_SLASH = False
 
@@ -65,7 +65,7 @@ INSTALLED_APPS.extend([
     'drf_yasg',  # pip install drf_yasg
     'rest_framework',  # pip install djangorestframework
     'rest_framework.authtoken',
-    'django_eventstream',  # pip install django_eventstream
+    'django_eventstream',  # pip install django-eventstream
     # 'bootstrap4',  # pip install django-bootstrap4
 ])
 
