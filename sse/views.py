@@ -3,10 +3,12 @@ from django_eventstream import send_event, get_current_event_id
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 import logging
+from django.views.decorators.csrf import csrf_exempt
 
 db_logger = logging.getLogger('db')
 
 
+@csrf_exempt
 def messages(request, channels_id):
     if request.method == 'GET':
         event_count = get_current_event_id(['channels-{}'.format(channels_id)])
@@ -34,6 +36,7 @@ def messages(request, channels_id):
                 return JsonResponse({"message": "TOKEN_ERROR"}, status=status.HTTP_401_UNAUTHORIZED)
 
             text = request.POST['text']
+
             send_event('channels-{}'.format(channels_id), 'message', text)
             return JsonResponse({'message': 'SEND_SUCCESS'}, status=status.HTTP_200_OK)
         except KeyError:

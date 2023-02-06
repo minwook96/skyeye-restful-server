@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 with open('./secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # APPEND_SLASH = False
 
@@ -92,6 +92,14 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',  # 비인증 요청에 대해서는 읽기만 허용
     ]
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.skysys.co.kr'
+EMAIL_USE_TLS = False
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'mwhwang@skysys.co.kr'
+EMAIL_HOST_PASSWORD = 'als2125@'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 ROOT_URLCONF = "server.urls"
 
