@@ -1,11 +1,12 @@
 from urllib import parse
-from openid.server.server import logger
+import logging
 from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
 from channels.auth import AuthMiddlewareStack
 from rest_framework.response import Response
 from rest_framework import status
 
+db_logger = logging.getLogger('db')
 
 @database_sync_to_async
 def get_user_from_headers_or_queries(scope):
@@ -18,13 +19,13 @@ def get_user_from_headers_or_queries(scope):
         headers = dict(scope["headers"])
     except KeyError as error:
         headers = {}
-        logger.error(error)
+        db_logger.error(error)
 
     try:
         params = dict(parse.parse_qsl(scope["query_string"].decode("utf8")))
     except KeyError as error:
         params = {}
-        logger.warning(error)
+        db_logger.warning(error)
 
     token_key = None
     token_is_found = False
