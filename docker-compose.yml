@@ -8,6 +8,7 @@ services:
       - ./skyeye-restful-server:/skyeye-docker-server
       - ./nginx:/etc/nginx/conf.d
       - ./skyeye-restful-server/static:/static
+      - ./skyeye-restful-server/media:/media
     depends_on:
       - web
   web:
@@ -19,5 +20,6 @@ services:
     volumes:
       - ./skyeye-restful-server:/skyeye-docker-server
       - ./skyeye-restful-server/static:/static
+      - ./skyeye-restful-server/media:/media
     ports:
       - "8000"
