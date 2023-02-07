@@ -48,6 +48,7 @@ urlpatterns = [
     path("", include("skyeye.urls")),
     path("", include("helikite.urls")),
     path("", include("accounts.urls")),
+    path("", include("django_db_logger.urls")),
 
 ] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
