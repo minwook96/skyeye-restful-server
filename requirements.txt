@@ -8,3 +8,4 @@ Pillow
 # gunicorn
 mysqlclient
 daphne
+Twisted[tls,http2]
