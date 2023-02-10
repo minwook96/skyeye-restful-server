@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 from rest_framework.authtoken.views import obtain_auth_token
+from django.conf.urls import handler400, handler403, handler404, handler500
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -63,3 +64,8 @@ if settings.DEBUG:
     urlpatterns += [
             re_path(r'^__debug__/', include(debug_toolbar.urls)),
     ]
+
+handler400 = 'server.views.custom_bad_request_view'
+handler403 = 'server.views.custom_permission_denied_view'
+handler404 = 'server.views.custom_page_not_found_view'
+handler500 = 'server.views.custom_error_view'

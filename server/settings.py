@@ -24,21 +24,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 with open('./secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # APPEND_SLASH = False
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://192.168.88.6:8000', 'http://skysys.iptime.org:8000']
 
 # Application definition
 AUTH_USER_MODEL = 'accounts.User'
-
 # AUTHENTICATION_BACKENDS = (
 #     'django.contrib.auth.backends.AllowAllUsersModelBackend',
 #     'accounts.backends.CaseInsensitiveModelBackend',
 # )
 
 INSTALLED_APPS = [
+    'jazzmin',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -75,7 +76,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
