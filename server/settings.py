@@ -26,7 +26,7 @@ with open('./secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# APPEND_SLASH = False
+# APPEND_SLASH = True
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://192.168.88.6:8000', 'http://skysys.iptime.org:8000']
@@ -290,6 +290,7 @@ JAZZMIN_SETTINGS = {
     # # Add a language dropdown into the admin
     # "language_chooser": True,
 }
+
 # # 로그인 성공후 이동하는 URL
 # LOGIN_REDIRECT_URL = '/redoc'
 # # 로그아웃시 이동하는 URL
@@ -346,7 +347,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
