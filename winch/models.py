@@ -31,12 +31,12 @@ class WinchDataLog(models.Model):
     tetherline_length = models.FloatField(blank=True, null=True, help_text='티더선 길이')
     tetherline_angle = models.FloatField(blank=True, null=True, help_text='티더선 각도')
     tetherline_tension = models.FloatField(blank=True, null=True, help_text='티더선 장력')
-    pressure = models.IntegerField(blank=True, null=True, help_text='무선통신 수신 감도')
+    pressure = models.IntegerField(blank=True, null=True, help_text='기압')
     temperature = models.FloatField(blank=True, null=True, help_text='온도')
     wind_direction = models.CharField(max_length=100, blank=True, null=True, help_text='풍향')
     wind_speed = models.FloatField(blank=True, null=True, help_text='풍속')
     rain = models.IntegerField(blank=True, null=True, help_text='강우')
-    rssi = models.IntegerField(db_column='RSSI', blank=True, null=True, help_text='기압')
+    rssi = models.IntegerField(db_column='RSSI', blank=True, null=True, help_text='무선통신 수신 감도')
 
     class Meta:
         managed = False

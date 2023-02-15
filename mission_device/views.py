@@ -59,6 +59,7 @@ class MissionDeviceDataLogViewSet(viewsets.ModelViewSet):
                 # print("임무장비 데이터 GCS 전송", serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
+                db_logger.exception(status.HTTP_404_NOT_FOUND)
                 return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             db_logger.exception(e)

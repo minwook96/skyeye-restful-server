@@ -47,6 +47,7 @@ class WinchDataLogViewSet(viewsets.ModelViewSet):
                 # print("윈치 데이터 GCS 전송", serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
+                db_logger.exception(status.HTTP_404_NOT_FOUND)
                 return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             db_logger.exception(e)

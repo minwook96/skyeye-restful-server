@@ -19,7 +19,7 @@ class StatusLog(models.Model):
     level = models.PositiveSmallIntegerField(choices=LOG_LEVELS, default=logging.ERROR, db_index=True)
     msg = models.TextField()
     trace = models.TextField(blank=True, null=True)
-    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
+    create_datetime = models.DateTimeField(verbose_name='Created at', auto_now=True)
 
     def __str__(self):
         return self.msg
