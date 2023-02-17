@@ -47,13 +47,14 @@ class DetectionView(viewsets.ModelViewSet):
                 to = [user.email]
                 message = "금일 {}경 산불 발생".format(detection_time)
                 try:
-                    mail = EmailMessage(subject=subject, body=message, to=to, from_email=settings.EMAIL_HOST_USER)
-                    mail.attach(image.name, image.read(), image.content_type)
-                    mail.send()
+                    # mail = EmailMessage(subject=subject, body=message, to=to, from_email=settings.EMAIL_HOST_USER)
+                    # mail.attach(image.name, image.read(), image.content_type)
+                    # mail.send()
+                    serializer.save(user=request.user)
+
                 except:
                     db_logger.exception("Mail Attachment error")
 
-                serializer.save(user=request.user)
             return Response(status=status.HTTP_201_CREATED)
         else:
             db_logger.exception(status.HTTP_400_BAD_REQUEST)

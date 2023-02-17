@@ -59,7 +59,7 @@ class TokenAuthMiddleware:
             scope["user"] = user
             return await self.app(scope, receive, send)
         else:
-            print("Fail")
+            # print("Fail")
             return Response(user, status=status.HTTP_401_UNAUTHORIZED)
 
 

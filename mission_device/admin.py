@@ -1,5 +1,13 @@
 from django.contrib import admin
+from django.db.models.functions import TruncDay, TruncTime, TruncMinute
+
 from .models import *
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+import logging
+from django.db.models import Count, F
+
+db_logger = logging.getLogger('db')
 
 
 # Register your models here.
@@ -18,12 +26,47 @@ class CameraAdmin(admin.ModelAdmin):
 
 
 class MissiondeviceDataLogAdmin(admin.ModelAdmin):
+    date_hierarchy = "date"
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
-        'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw',
-        'camera_roll', 'camera_pitch', 'camera_yaw', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
+        'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw', 'camera_roll',
+        'camera_pitch', 'camera_yaw', 'camera_zoom', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
         'etc_senser', 'rssi', 'missiondevice_serial_number')
-    list_filter = ('missiondevice_serial_number', )
+    list_filter = ('missiondevice_serial_number',)
+
+    def chart_data(self, queryset):
+        return (
+            queryset.annotate(day=TruncDay("date"))
+            .values("day")
+            .annotate(y=Count("temperature"))
+            .order_by("-day")
+        )
+
+    def changelist_view(self, request, extra_context=None):
+        try:
+            response = super().changelist_view(request, extra_context=extra_context)
+            queryset = response.context_data["cl"].queryset
+
+            date = queryset.values("date").annotate(x=F("date"))
+            column_mode = queryset.values("camera_roll").values('missiondevice_serial_number').annotate(y=F("camera_roll"))
+            print("x: ", date)
+            print("y: ", column_mode)
+            chart_data = self.chart_data(queryset)
+
+            column_keys = list()
+            column_values = list()
+            for item in column_mode:
+                column_keys.append(item.get('camera_roll'))
+                column_values.append(item.get('y'))
+
+            # Serialize and attach the chart data to the template context
+            as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
+            extra_context = extra_context or {"chart_data": as_json}
+        except Exception as e:
+            db_logger.exception(e)
+
+            # Call the superclass changelist_view to render the page
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(Missiondevice, MissiondeviceAdmin)

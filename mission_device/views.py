@@ -7,6 +7,7 @@ import logging
 
 db_logger = logging.getLogger('db')
 
+
 # Create your views here.
 class MissionDeviceViewSet(viewsets.ModelViewSet):
     queryset = Missiondevice.objects.all()
@@ -22,6 +23,7 @@ class MissionDeviceViewSet(viewsets.ModelViewSet):
             db_logger.exception(status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class CameraViewSet(viewsets.ModelViewSet):
     queryset = Camera.objects.all()
     serializer_class = CameraSerializer
@@ -35,6 +37,7 @@ class CameraViewSet(viewsets.ModelViewSet):
         else:
             db_logger.exception(status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class MissionDeviceDataLogViewSet(viewsets.ModelViewSet):
     queryset = MissiondeviceDataLog.objects.all()
@@ -64,4 +67,3 @@ class MissionDeviceDataLogViewSet(viewsets.ModelViewSet):
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-

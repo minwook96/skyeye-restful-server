@@ -30,7 +30,7 @@ class SiteViewSet(viewsets.ModelViewSet):
                 if Site.objects.filter(winch_serial_number=winch_serial_number).exists():
                     data = Site.objects.get(winch_serial_number=winch_serial_number)
                     serializer = SiteSerializer(data)
-                    return Response(serializer.data["missiondevice_serial_number"], status=status.HTTP_200_OK)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     db_logger.exception(status.HTTP_404_NOT_FOUND)
                     return Response(status=status.HTTP_404_NOT_FOUND)
@@ -39,7 +39,7 @@ class SiteViewSet(viewsets.ModelViewSet):
                 if Site.objects.filter(missiondevice_serial_number=missiondevice_serial_number).exists():
                     data = Site.objects.get(missiondevice_serial_number=missiondevice_serial_number)
                     serializer = SiteSerializer(data)
-                    return Response(serializer.data["winch_serial_number"], status=status.HTTP_200_OK)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     db_logger.exception(status.HTTP_404_NOT_FOUND)
                     return Response(status=status.HTTP_404_NOT_FOUND)
@@ -48,8 +48,7 @@ class SiteViewSet(viewsets.ModelViewSet):
                 if Site.objects.filter(missiondevice_serial_number=missiondevice_serial_number).exists():
                     data = Site.objects.get(missiondevice_serial_number=missiondevice_serial_number)
                     serializer = SiteSerializer(data)
-                    print(serializer.data)
-                    return Response(serializer.data["site_id"], status=status.HTTP_200_OK)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     db_logger.exception(status.HTTP_404_NOT_FOUND)
                     return Response(status=status.HTTP_404_NOT_FOUND)

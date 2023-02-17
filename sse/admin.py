@@ -6,8 +6,8 @@ from django_eventstream.models import *
 class EventAdmin(admin.ModelAdmin):
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
-        'id', 'channel', 'data', 'created', 'eid', 'type')
-    list_filter = ('channel', )
+        'id', 'channel', 'data', 'user', 'created')
+    list_filter = ('channel', 'user')
 
 
 class EventCounterAdmin(admin.ModelAdmin):

@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from django_eventstream.utils import have_channels
 from .jazzmin import JAZZMIN_SETTINGS
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -74,7 +75,7 @@ INSTALLED_APPS.extend([
 MIDDLEWARE = [
     'django_grip.GripMiddleware',  # add
     'debug_toolbar.middleware.DebugToolbarMiddleware',  # add
-    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware', # add
+    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',  # add
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
