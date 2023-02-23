@@ -41,20 +41,20 @@ JAZZMIN_SETTINGS = {
     # ############
 
     # # Links to put along the top menu
-    # "topmenu_links": [
-    #
-    #     # Url that gets reversed (Permissions can be added)
-    #     {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
-    #
-    #     # external url that opens in a new window (Permissions can be added)
-    #     {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
-    #
-    #     # model admin to link to (Permissions checked against model)
-    #     {"model": "auth.User"},
-    #
-    #     # App with dropdown menu to all its models pages (Permissions checked against models)
-    #     {"app": "books"},
-    # ],
+    "topmenu_links": [
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "accounts.User"},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Swagger", "url": "http://skysys.iptime.org:8000/swagger", "new_window": True},
+        {"name": "Redoc", "url": "http://skysys.iptime.org:8000/redoc", "new_window": True},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        # {"app": "mission_device"},
+    ],
     #
     # #############
     # # User Menu #

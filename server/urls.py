@@ -41,7 +41,6 @@ urlpatterns = [
     # path("api-auth/", include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token),
     # 이 아랫 부분은 우리가 사용하는 app들의 URL들을 넣습니다.
-    # path('', homescreen_view, name='home'),
     path("", include("sse.urls")),
     path("", include("mission_device.urls")),
     path("", include("winch.urls")),

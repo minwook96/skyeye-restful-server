@@ -1,0 +1,202 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %} {% trans 'Dashboard' %} {% endblock %}
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item">{% trans 'Dashboard' %}</li>
+    </ol>
+{% endblock %}
+{% block content %}
+    {% get_side_menu using="app_list" as dashboard_list %}
+    {% if dashboard_list %}
+        {% widthratio dashboard_list|length 2 1 as middle %}
+    {% endif %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <div class="col-lg-9 col-12">
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const ctx1 = document.getElementById('myChart1').getContext('2d');
+
+        // Sample data
+        const chartData1 = {{ date1 | safe }};
+
+        chartData1.forEach((d) => {
+            d.x = new Date(d.day);
+            console.log(d)
+        });
+
+        // Render the chart
+        const chart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: "temperature",
+                        data: chartData1,
+                        fill: false,
+                        backgroundColor: 'rgba(33,150,243,0.5)',
+                        // yAxisID: 'y',
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [
+                        {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                round: 'hour',
+                                tooltipFormat:'h:mm:ss a',
+                                displayFormats: {
+                                    day: 'MMM D',
+                                },
+                            },
+                        },
+                    ],
+                    yAxes: [
+                        {
+                            ticks: {
+                                // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
+                                beginAtZero: false,
+                            },
+                        },
+                    ],
+                },
+            },
+        });
+    });
+        document.addEventListener('DOMContentLoaded', () => {
+        const ctx2 = document.getElementById('myChart2').getContext('2d');
+
+        // Sample data
+        const chartData2 = {{ date2 | safe }};
+
+        chartData2.forEach((d) => {
+            d.x = new Date(d.day);
+            console.log(d)
+        });
+
+        // Render the chart
+        const chart2 = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: "tetherline_angle",
+                        data: chartData2,
+                        fill: false,
+                        backgroundColor: 'rgba(33,150,243,0.5)',
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [
+                        {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                round: 'hour',
+                                tooltipFormat:'h:mm:ss a',
+                                displayFormats: {
+                                    day: 'MMM D',
+                                    round: 'MMM D, h:mm a'
+                                },
+                            },
+                        },
+                    ],
+                    yAxes: [
+                        {
+                            ticks: {
+                                // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
+                                beginAtZero: false,
+                            },
+                        },
+                    ],
+                },
+            },
+        });
+    });
+</script>
+        <h5>Mission Device</h5>
+<div style="width: 100%;">
+    <canvas style="margin-bottom: 30px; width: 100%; height: 100%;" id="myChart1"></canvas>
+</div>
+        <h5>Winch</h5>
+        <div style="width: 100%;">
+    <canvas style="margin-bottom: 30px; width: 100%; height: 100%;" id="myChart2"></canvas>
+</div>
+    </div>
+    <div class="col-lg-3 col-12">
+        <div id="content-related">
+            <div class="module" id="recent-actions-module">
+                <h4 class="mb-3">{% trans 'Recent actions' %}</h4>
+                {% load log %}
+                {% get_admin_log 6 as admin_log for_user user %}
+                {% if not admin_log %}
+                    <p>{% trans 'None available' %}</p>
+                {% else %}
+                    <div class="timeline">
+                        {% for entry in admin_log %}
+                            <div>
+                                {% if entry.is_change %}
+                                    <i class="fas fa-edit bg-gray text-xs"></i>
+                                {% elif entry.is_deletion %}
+                                    <i class="fas fa-trash bg-danger text-xs"></i>
+                                {% elif entry.is_addition %}
+                                    <i class="fas fa-plus-circle bg-success text-xs"></i>
+                                {% endif %}
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fas fa-clock"></i> {% blocktrans with timesince=entry.action_time|timesince %}{{ timesince }} ago{% endblocktrans %}</span>
+                                    <h3 class="timeline-header no-border">
+                                        {% if entry.is_deletion or not entry.get_admin_url %}
+                                            {{ entry.object_repr }}
+                                        {% else %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% endif %}
+
+                                        {% if entry.model %}
+                                            <span class="mini quiet">
+                                                {% filter capfirst %}
+                                                    {{ entry.model }}
+                                                {% endfilter %}
+                                            </span>
+                                        {% endif %}
+                                    </h3>
+                                    {% if not entry.is_deletion %}
+                                        <div class="timeline-body">
+                                            {% if entry.is_addition %}
+                                                {{ entry }}
+                                            {% else %}
+                                                <ul style="list-style: none; padding: 0;">
+                                                    {% action_message_to_list entry as action_message_list %}
+                                                    {% for action_message in action_message_list %}
+                                                        <li>{{ action_message.msg|style_bold_first_word }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div>
+                            <i class="fa fa-clock bg-gray"></i>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
