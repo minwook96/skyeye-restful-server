@@ -11,3 +11,4 @@ daphne
 Twisted[tls,http2]
 django-jazzmin
 drf-api-logger
+django-admin-rangefilter

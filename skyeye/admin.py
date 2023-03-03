@@ -1,13 +1,15 @@
 from django.contrib import admin
 from .models import *
-from django.db.models.functions import TruncDay, TruncHour
+from django.db.models.functions import TruncDay, TruncHour, TruncSecond, TruncMinute
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, F, Avg
 from mission_device.models import MissiondeviceDataLog
 from winch.models import WinchDataLog
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+import logging
 
+db_logger = logging.getLogger('db')
 
 # Register your models here.
 class SiteAdmin(admin.ModelAdmin):
@@ -22,21 +24,40 @@ origin_index = admin.site.index  # 원래의 index view 함수를 저장해 놓�
 
 def index(request, extra_context=None):  # 사용자 정의 index 선언
     try:
-        current_date = date.today()
-        future_date = current_date - timedelta(days=7)
-        mission_device = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date)).annotate(
-            day=TruncDay("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
-        # print()
+        if request.GET is not None:
+            print(request.GET.get('date__month'))
+            print(request.GET.get('date__year'))
+
+        current_date = datetime.today()
+        future_date = current_date - timedelta(hours=1)
+        print(future_date)
+
+        temperature = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date)).annotate(
+            day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
+        camera_roll = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+                                                          missiondevice_serial_number="test1").annotate(
+            day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
+        camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+                                                           missiondevice_serial_number="test1").annotate(
+            day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
+        camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+                                                         missiondevice_serial_number="test1").annotate(
+            day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
+        # print(camera_yaw)
         winch = WinchDataLog.objects.filter(date__range=(future_date, current_date)).annotate(
             day=TruncDay("date")).values("day").annotate(
             y=Avg("tetherline_angle")).order_by("-day")
         extra_context = {
-            "date1": json.dumps(list(mission_device), cls=DjangoJSONEncoder),
+            "temperature": json.dumps(list(temperature), cls=DjangoJSONEncoder),
+            "camera_roll": json.dumps(list(camera_roll), cls=DjangoJSONEncoder),
+            "camera_pitch": json.dumps(list(camera_pitch), cls=DjangoJSONEncoder),
+            "camera_yaw": json.dumps(list(camera_yaw), cls=DjangoJSONEncoder),
             "date2": json.dumps(list(winch), cls=DjangoJSONEncoder)
 
         }
     except Exception as e:
         print(e)
+        db_logger.exception(e)
     return origin_index(request, extra_context)  # 원래의 index view 기능을 수행
 
 

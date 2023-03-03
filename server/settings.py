@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from django_eventstream.utils import have_channels
 from .jazzmin import JAZZMIN_SETTINGS
+from .database import DATABASE_SETTINGS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,6 +63,7 @@ INSTALLED_APPS.extend([
     'mission_device',
     'fire_detection',
     # 3rd party app
+    'rangefilter',  # pip install django-admin-rangefilter
     'debug_toolbar',  # pip install django-debug-toolbar
     'django_db_logger',  # pip install django-db-logger
     'drf_yasg',  # pip install drf_yasg
@@ -170,19 +172,7 @@ EVENTSTREAM_STORAGE_CLASS = 'django_eventstream.storage.DjangoModelStorage'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test',  # Database 이름
-        'USER': 'skysys',  # 데이터베이스에서 사용할 계정
-        'PASSWORD': 'tmzkdl11@!',  # 계정의 비밀번호
-        'HOST': '192.168.88.6',  # 데이테베이스 주소
-        'PORT': '3306',  # 데이터베이스 포트, mysql 디폴트값은 3306
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        }
-    }
-}
+DATABASES = DATABASE_SETTINGS
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -221,7 +211,6 @@ STATICFILE_DIRS = (
     os.path.join(BASE_DIR, 'static')
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

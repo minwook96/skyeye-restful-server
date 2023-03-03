@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
 <!--{{ date|json_script:"chart-data" }}-->
-{{ column_keys|json_script:"chart-key" }}
-{{ column_values|json_script:"chart-values" }}
+<!--{{ column_keys|json_script:"chart-key" }}-->
+<!--{{ column_values|json_script:"chart-values" }}-->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('myChart').getContext('2d');
@@ -17,8 +17,8 @@
         const chartData = {{ date | safe }};
 
         // const chartData = JSON.parse(document.getElementById("chart-data").textContent);
-        const chartKey = JSON.parse(document.getElementById("chart-key").textContent);
-        const chartValue = JSON.parse(document.getElementById("chart-values").textContent);
+        // const chartKey = JSON.parse(document.getElementById("chart-key").textContent);
+        // const chartValue = JSON.parse(document.getElementById("chart-values").textContent);
 
         // console.log(chartData);
 
@@ -29,27 +29,19 @@
         // });
         chartData.forEach((d) => {
             d.x = new Date(d.hour);
-            console.log(d)
+            // console.log(d)
         });
 
         // Render the chart
         const chart = new Chart(ctx, {
-            type: 'line',
+            type: 'bubble',
             data: {
                 datasets: [
                     {
-                        label: "temperature",
+                        label: "camera_yaw",
                         data: chartData,
-                        fill: false,
                         backgroundColor: 'rgba(33,150,243,0.5)',
-                        // yAxisID: 'y',
                     },
-                    // {
-                    //     label: 'Dataset 2',
-                    //     data: chartValue,
-                    //     backgroundColor: 'rgba(0,200,0,0.5)',
-                    //     yAxisID: 'y1',
-                    // }
                 ],
             },
             options: {
@@ -59,11 +51,8 @@
                         {
                             type: 'time',
                             time: {
-                                unit: 'day',
-                                round: 'hour',
-                                tooltipFormat:'h:mm:ss a',
                                 displayFormats: {
-                                    day: 'MMM D',
+                                    second: 'MMM D, h:mm:ss a',
                                 },
                             },
                         },

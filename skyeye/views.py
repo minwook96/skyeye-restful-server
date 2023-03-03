@@ -36,6 +36,7 @@ class SiteViewSet(viewsets.ModelViewSet):
                     return Response(status=status.HTTP_404_NOT_FOUND)
             elif request.GET.get('missiondevice_serial_number') is not None:
                 missiondevice_serial_number = request.GET.get('missiondevice_serial_number')
+                print(missiondevice_serial_number)
                 if Site.objects.filter(missiondevice_serial_number=missiondevice_serial_number).exists():
                     data = Site.objects.get(missiondevice_serial_number=missiondevice_serial_number)
                     serializer = SiteSerializer(data)
@@ -44,17 +45,18 @@ class SiteViewSet(viewsets.ModelViewSet):
                     db_logger.exception(status.HTTP_404_NOT_FOUND)
                     return Response(status=status.HTTP_404_NOT_FOUND)
             elif request.GET.get('gcs_serial_number') is not None:
-                missiondevice_serial_number = request.GET.get('gcs_serial_number')
-                if Site.objects.filter(missiondevice_serial_number=missiondevice_serial_number).exists():
-                    data = Site.objects.get(missiondevice_serial_number=missiondevice_serial_number)
+                gcs_serial_number = request.GET.get('gcs_serial_number')
+                if Site.objects.filter(gcs_serial_number=gcs_serial_number).exists():
+                    data = Site.objects.get(gcs_serial_number=gcs_serial_number)
                     serializer = SiteSerializer(data)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     db_logger.exception(status.HTTP_404_NOT_FOUND)
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
-                db_logger.exception(status.HTTP_400_BAD_REQUEST)
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                data = Site.objects.all()
+                serializer = SiteSerializer(data, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
