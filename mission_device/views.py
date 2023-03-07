@@ -85,9 +85,9 @@ class PoiViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            name = request.GET['name']
-            if Poi.objects.filter(site_name=name).exists():
-                data = Poi.objects.filter(site_name=name)
+            id = request.GET['id']
+            if Poi.objects.filter(site=id).exists():
+                data = Poi.objects.filter(site=id)
                 serializer = PoiSerializer(data)
                 print("POI 데이터 GCS 전송", serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)

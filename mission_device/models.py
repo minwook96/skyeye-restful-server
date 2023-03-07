@@ -64,8 +64,7 @@ class MissiondeviceDataLog(models.Model):
 
 class Poi(models.Model):
     poi_id = models.AutoField(primary_key=True, help_text='auto increment PK')
-    site_name = models.ForeignKey('skyeye.Site', models.DO_NOTHING, db_column='site_name', to_field='name', blank=True,
-                                  null=True, help_text='장소명')
+    site = models.ForeignKey('skyeye.Site', models.DO_NOTHING, blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True, help_text='위도')
     longitude = models.FloatField(blank=True, null=True, help_text='경도')
     altitude = models.FloatField(blank=True, null=True, help_text='고도')

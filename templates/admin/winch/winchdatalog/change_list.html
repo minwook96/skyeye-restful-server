@@ -38,7 +38,7 @@
             data: {
                 datasets: [
                     {
-                        label: "Tetherline angle",
+                        label: "wind_speed",
                         data: chartData,
                         fill: false,
                         backgroundColor: 'rgba(33,150,243,0.5)',
@@ -59,11 +59,8 @@
                         {
                             type: 'time',
                             time: {
-                                unit: 'day',
-                                round: 'hour',
-                                tooltipFormat:'h:mm:ss a',
                                 displayFormats: {
-                                    day: 'MMM D',
+                                    second: 'MMM D, h:mm:ss a',
                                 },
                             },
                         },

@@ -11,6 +11,7 @@ import logging
 
 db_logger = logging.getLogger('db')
 
+
 # Register your models here.
 class SiteAdmin(admin.ModelAdmin):
     # 관리자 화면에 보여질 칼럼 지정
@@ -29,24 +30,24 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
             print(request.GET.get('date__year'))
 
         current_date = datetime.today()
-        future_date = current_date - timedelta(hours=1)
-        print(future_date)
+        past_date = current_date - timedelta(days=7)
+        past_time = current_date - timedelta(hours=1)
+        # print(future_date)
 
-        temperature = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date)).annotate(
+        temperature = MissiondeviceDataLog.objects.filter(date__range=(past_date, current_date)).annotate(
             day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
-        camera_roll = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+        camera_roll = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
                                                           missiondevice_serial_number="test1").annotate(
             day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
-        camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+        camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
                                                            missiondevice_serial_number="test1").annotate(
             day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
-        camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(future_date, current_date),
+        camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
                                                          missiondevice_serial_number="test1").annotate(
             day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
         # print(camera_yaw)
-        winch = WinchDataLog.objects.filter(date__range=(future_date, current_date)).annotate(
-            day=TruncDay("date")).values("day").annotate(
-            y=Avg("tetherline_angle")).order_by("-day")
+        winch = WinchDataLog.objects.filter(date__range=(past_time, current_date)).annotate(
+            day=TruncSecond("date")).values("day").annotate(y=F("wind_speed")).order_by("-day")
         extra_context = {
             "temperature": json.dumps(list(temperature), cls=DjangoJSONEncoder),
             "camera_roll": json.dumps(list(camera_roll), cls=DjangoJSONEncoder),

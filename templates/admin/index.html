@@ -143,6 +143,9 @@
                                 ticks: {
                                     // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
                                     beginAtZero: false,
+                                    min: 0,
+                                    max: 1500,
+                                    stepSize: 100,
                                 },
                             },
                         ],
@@ -180,12 +183,8 @@
                             {
                                 type: 'time',
                                 time: {
-                                    unit: 'day',
-                                    round: 'hour',
-                                    tooltipFormat: 'h:mm:ss a',
                                     displayFormats: {
-                                        day: 'MMM D',
-                                        round: 'MMM D, h:mm a'
+                                        second: 'MMM D, h:mm:ss a',
                                     },
                                 },
                             },

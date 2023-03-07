@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import *
-from django.db.models.functions import TruncDay, TruncHour, TruncMinute
+from django.db.models.functions import TruncDay, TruncHour, TruncMinute, TruncSecond
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, F, Avg
-
+from datetime import timedelta, datetime
+from pytz import timezone
 
 # Register your models here.
 class WinchAdmin(admin.ModelAdmin):
@@ -19,19 +20,29 @@ class WinchDataLogAdmin(admin.ModelAdmin):
 
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
-        'winch_data_log_id', 'date', 'latitude', 'longitude', 'main_power_voltage', 'tetherline_voltage',
+        'winch_data_log_id', 'format_date', 'latitude', 'longitude', 'main_power_voltage', 'tetherline_voltage',
         'main_power_electric_current', 'tetherline_electric_current', 'mechanical_brake_operation',
         'electronic_brake_operation', 'tetherline_length', 'tetherline_angle', 'tetherline_tension', 'pressure',
         'temperature', 'wind_direction', 'wind_speed', 'rain', 'rssi', 'winch_serial_number')
     list_filter = ('date', 'winch_serial_number',)
 
+    def format_date(self, obj):
+        return obj.date.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S')
+
+    format_date.admin_order_field = 'date'
+    format_date.short_description = 'Date'
+
     def changelist_view(self, request, extra_context=None):
         try:
             response = super().changelist_view(request, extra_context=extra_context)
             queryset = response.context_data["cl"].queryset
+
+            current_date = datetime.today()
+            past_date = current_date - timedelta(hours=1)
             # print(queryset)
-            date = queryset.annotate(hour=TruncHour("date")).values("hour").annotate(
-                y=Avg("tetherline_angle")).order_by("-hour")
+            queryset = queryset.filter(date__range=(past_date, current_date))
+            date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F("wind_speed")).order_by(
+                "-hour")
             # column_mode = queryset.values("camera_roll").values('missiondevice_serial_number').annotate(
             #     camera_roll=F("camera_roll"))
             # print("x: ", date)

@@ -7,6 +7,7 @@ import logging
 from django.db.models import Count, F, Avg
 from datetime import timedelta, datetime
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter, NumericRangeFilter
+from pytz import timezone
 
 db_logger = logging.getLogger('db')
 
@@ -30,10 +31,16 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
     # date_hierarchy = "date"
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
-        'missiondevice_data_log_id', 'date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw', 'camera_roll',
+        'missiondevice_data_log_id', 'format_date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw', 'camera_roll',
         'camera_pitch', 'camera_yaw', 'camera_zoom', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
         'etc_senser', 'rssi', 'missiondevice_serial_number')
     list_filter = ('missiondevice_serial_number', ('date', DateTimeRangeFilter),)
+
+    def format_date(self, obj):
+        return obj.date.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S')
+
+    format_date.admin_order_field = 'date'
+    format_date.short_description = 'Date'
 
     def get_rangefilter_date_default(self, request):
         current_date = datetime.today()
@@ -90,7 +97,7 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
 
 class PoiAdmin(admin.ModelAdmin):
     # 관리자 화면에 보여질 칼럼 지정
-    list_display = ('poi_id', 'site_name', 'latitude', 'longitude', 'altitude', 'zoom_level')
+    list_display = ('poi_id', 'site', 'latitude', 'longitude', 'altitude', 'zoom_level')
 
 
 admin.site.register(Poi, PoiAdmin)
