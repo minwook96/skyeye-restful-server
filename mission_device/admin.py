@@ -88,6 +88,12 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 
+class PoiAdmin(admin.ModelAdmin):
+    # 관리자 화면에 보여질 칼럼 지정
+    list_display = ('poi_id', 'site_name', 'latitude', 'longitude', 'altitude')
+
+
+admin.site.register(Poi, PoiAdmin)
 admin.site.register(Missiondevice, MissiondeviceAdmin)
 admin.site.register(Camera, CameraAdmin)
 admin.site.register(MissiondeviceDataLog, MissiondeviceDataLogAdmin)
