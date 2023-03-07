@@ -5,4 +5,6 @@ router = routers.SimpleRouter()
 router.register('mission_device', MissionDeviceViewSet)
 router.register('camera', CameraViewSet)
 router.register('mission_device_log', MissionDeviceDataLogViewSet)
+router.register('poi', PoiViewSet)
+
 urlpatterns = router.urls

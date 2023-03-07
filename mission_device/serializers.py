@@ -18,3 +18,9 @@ class MissionDeviceDataLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = MissiondeviceDataLog
         fields = '__all__'
+
+
+class PoiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poi
+        fields = '__all__'

@@ -67,3 +67,33 @@ class MissionDeviceDataLogViewSet(viewsets.ModelViewSet):
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class PoiViewSet(viewsets.ModelViewSet):
+    queryset = Poi.objects.all()
+    serializer_class = PoiSerializer
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # print("POI 로그 데이터", serializer.data)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            db_logger.exception(status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            name = request.GET['name']
+            if Poi.objects.filter(site_name=name).exists():
+                data = Poi.objects.filter(site_name=name)
+                serializer = PoiSerializer(data)
+                print("POI 데이터 GCS 전송", serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                db_logger.exception(status.HTTP_404_NOT_FOUND)
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            db_logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
