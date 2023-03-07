@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # with open('/etc/secret_key.txt') as f:
 with open('./secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
+    SECRET_KEY = f.read().strip()  # 패스워드를 암호화할 때 사용하는 키
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = False  # 웹에서 오류가 났을 때 자세한 내용을 알려준다. 배포때는 false로 해야 한다
 
 # APPEND_SLASH = False
 
@@ -99,6 +99,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+# email 알림 전송 설정
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.skysys.co.kr'
 EMAIL_USE_TLS = False
@@ -109,6 +110,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 ROOT_URLCONF = "server.urls"
 
+# 템플릿 설정
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -157,11 +159,6 @@ LOGGING = {
     }
 }
 
-# # 로그인 성공후 이동하는 URL
-# LOGIN_REDIRECT_URL = '/redoc'
-# # 로그아웃시 이동하는 URL
-# LOGOUT_REDIRECT_URL = '/users/login'
-
 WSGI_APPLICATION = "server.wsgi.application"
 ASGI_APPLICATION = "server.asgi.application"
 
@@ -176,7 +173,6 @@ DATABASES = DATABASE_SETTINGS
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -192,26 +188,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# Internationalization(지역시각 및 다국어 설정)
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = 'Asia/Seoul'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILE_DIRS = (
     os.path.join(BASE_DIR, 'static')
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
+# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
