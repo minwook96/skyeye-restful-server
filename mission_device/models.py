@@ -69,6 +69,7 @@ class Poi(models.Model):
     latitude = models.FloatField(blank=True, null=True, help_text='위도')
     longitude = models.FloatField(blank=True, null=True, help_text='경도')
     altitude = models.FloatField(blank=True, null=True, help_text='고도')
+    zoom_level = models.IntegerField(blank=True, null=True, help_text='줌레벨')
 
     class Meta:
         managed = False

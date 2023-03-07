@@ -90,7 +90,7 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
 
 class PoiAdmin(admin.ModelAdmin):
     # 관리자 화면에 보여질 칼럼 지정
-    list_display = ('poi_id', 'site_name', 'latitude', 'longitude', 'altitude')
+    list_display = ('poi_id', 'site_name', 'latitude', 'longitude', 'altitude', 'zoom_level')
 
 
 admin.site.register(Poi, PoiAdmin)
