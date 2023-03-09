@@ -5,7 +5,8 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, F, Avg
 from datetime import timedelta, datetime
-from pytz import timezone
+from rangefilter.filters import DateTimeRangeFilter
+
 
 # Register your models here.
 class WinchAdmin(admin.ModelAdmin):
@@ -24,21 +25,33 @@ class WinchDataLogAdmin(admin.ModelAdmin):
         'main_power_electric_current', 'tetherline_electric_current', 'mechanical_brake_operation',
         'electronic_brake_operation', 'tetherline_length', 'tetherline_angle', 'tetherline_tension', 'pressure',
         'temperature', 'wind_direction', 'wind_speed', 'rain', 'rssi', 'winch_serial_number')
-    list_filter = ('date', 'winch_serial_number',)
+    list_filter = ('winch_serial_number', ('date', DateTimeRangeFilter),)
 
     def format_date(self, obj):
-        return obj.date.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S')
+        obj.date = obj.date + timedelta(hours=9)
+        return obj.date.strftime('%Y-%m-%d %H:%M:%S')
 
     format_date.admin_order_field = 'date'
     format_date.short_description = 'Date'
+
+    def get_rangefilter_date_default(self, request):
+        current_date = datetime.today()
+        past_date = current_date - timedelta(hours=1)
+        return past_date, current_date
 
     def changelist_view(self, request, extra_context=None):
         try:
             response = super().changelist_view(request, extra_context=extra_context)
             queryset = response.context_data["cl"].queryset
 
-            current_date = datetime.today()
-            past_date = current_date - timedelta(hours=1)
+            if request.GET.get("date__range__lte_0") is not None:
+                current_date = request.GET.get("date__range__lte_0") + " " + request.GET.get("date__range__lte_1")
+                past_date = request.GET.get("date__range__gte_0") + " " + request.GET.get("date__range__gte_1")
+                # print(past_date, current_date)
+            else:
+                current_date = datetime.today()
+                past_date = current_date - timedelta(hours=1)
+
             # print(queryset)
             queryset = queryset.filter(date__range=(past_date, current_date))
             date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F("wind_speed")).order_by(

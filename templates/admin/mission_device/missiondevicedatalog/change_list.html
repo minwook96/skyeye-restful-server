@@ -34,12 +34,13 @@
 
         // Render the chart
         const chart = new Chart(ctx, {
-            type: 'bubble',
+            type: 'line',
             data: {
                 datasets: [
                     {
                         label: "camera_yaw",
                         data: chartData,
+                        fill: false,
                         backgroundColor: 'rgba(33,150,243,0.5)',
                     },
                 ],

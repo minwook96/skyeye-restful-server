@@ -20,6 +20,14 @@ class SiteAdmin(admin.ModelAdmin):
         'missiondevice_serial_number', 'winch_serial_number')
 
 
+class SiteSettingsConfigAdmin(admin.ModelAdmin):
+    list_display = (
+        'site', 'missiondevice_altitude_high', 'missiondevice_altitude_low', 'missiondevice_voltage_high',
+        'missiondevice_voltage_low', 'winch_tetherline_length_high', 'winch_tetherline_length_low',
+        'winch_tetherline_angle_high', 'winch_tetherline_angle_low', 'winch_tetherline_tension_high',
+        'winch_tetherline_tension_low', 'winch_wind_speed_high', 'winch_wind_speed_low')
+
+
 origin_index = admin.site.index  # 원래의 index view 함수를 저장해 놓음
 
 
@@ -64,3 +72,4 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
 
 admin.site.index = index  # admin index가 요청이 되면 원래의 index view 함수가 아닌 사용자 지정 함수가 수행
 admin.site.register(Site, SiteAdmin)
+admin.site.register(SiteSettingsConfig, SiteSettingsConfigAdmin)

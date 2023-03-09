@@ -75,21 +75,22 @@ class PoiViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             serializer.save()
-            # print("POI 로그 데이터", serializer.data)
-            return Response(status=status.HTTP_201_CREATED)
+            print("POI 로그 데이터", serializer.data)
+            return Response(serializer.data['poi_id'], status=status.HTTP_201_CREATED)
         else:
             db_logger.exception(status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
         try:
-            id = request.GET['id']
-            if Poi.objects.filter(site=id).exists():
-                data = Poi.objects.filter(site=id)
-                serializer = PoiSerializer(data)
-                print("POI 데이터 GCS 전송", serializer.data)
+            site_id = request.GET['site_id']
+            if Poi.objects.filter(site_id=site_id).exists():
+                data = Poi.objects.filter(site_id=site_id)
+                serializer = PoiSerializer(data, many=True)
+                # print("POI 데이터 GCS 전송", serializer.data)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 db_logger.exception(status.HTTP_404_NOT_FOUND)
@@ -97,3 +98,14 @@ class PoiViewSet(viewsets.ModelViewSet):
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def retrieve(self, request, pk):
+    #     item = self.get_object()
+    #     serializer = self.get_serializer(item)
+    #     return Response(serializer.data)
+
+    # def destroy(self, request, *args, **kwargs):
+    #     item = self.get_object()
+    #     print(item)
+    #     item.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)

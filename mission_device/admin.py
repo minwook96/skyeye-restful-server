@@ -6,7 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import logging
 from django.db.models import Count, F, Avg
 from datetime import timedelta, datetime
-from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter, NumericRangeFilter
+from rangefilter.filters import DateTimeRangeFilter
 from pytz import timezone
 
 db_logger = logging.getLogger('db')
@@ -37,7 +37,8 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
     list_filter = ('missiondevice_serial_number', ('date', DateTimeRangeFilter),)
 
     def format_date(self, obj):
-        return obj.date.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S')
+        obj.date = obj.date + timedelta(hours=9)
+        return obj.date.strftime('%Y-%m-%d %H:%M:%S')
 
     format_date.admin_order_field = 'date'
     format_date.short_description = 'Date'
@@ -56,7 +57,7 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
             if request.GET.get("date__range__lte_0") is not None:
                 current_date = request.GET.get("date__range__lte_0") + " " + request.GET.get("date__range__lte_1")
                 past_date = request.GET.get("date__range__gte_0") + " " + request.GET.get("date__range__gte_1")
-                print(past_date, current_date)
+                # print(past_date, current_date)
             else:
                 current_date = datetime.today()
                 past_date = current_date - timedelta(hours=1)

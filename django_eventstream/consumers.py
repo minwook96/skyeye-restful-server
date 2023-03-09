@@ -263,8 +263,8 @@ class EventsConsumer(AsyncHttpConsumer):
                 first_result = False
 
                 # include padding on the first result
-                body += ':' + (' ' * 2048) + '\n\n'
-                body += 'event: stream-open\ndata:\n\n'
+                # body += ':' + (' ' * 2048) + '\n\n'
+                body += 'event: stream-open\ndata:\n'
 
             if len(event_response.channel_reset) > 0:
                 body += sse_encode_event(

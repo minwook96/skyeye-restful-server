@@ -29,8 +29,8 @@ class EventResponse(object):
         body = ''
 
         if not self.is_next:
-            body += ':' + (' ' * 2048) + '\n\n'
-            body += 'event: stream-open\ndata:\n\n'
+            # body += ':' + (' ' * 2048) + '\n\n'
+            body += 'event: stream-open\ndata:\n'
 
         if len(self.channel_reset) > 0:
             body += sse_encode_event(
@@ -49,6 +49,7 @@ class EventResponse(object):
                     event_id=event_id,
                     escape=True)
 
+        # if body is not None:
         resp = HttpResponse(body, content_type='text/event-stream')
 
         more = (len(self.channel_more) > 0)
@@ -106,6 +107,6 @@ class EventResponse(object):
 
         instruct.meta['user'] = user_id
 
-        instruct.set_keep_alive('event: keep-alive\ndata:\n\n', 20)
+        instruct.set_keep_alive('event: keep-alive\ndata:\n', 20)
 
         return resp

@@ -60,3 +60,37 @@ class SiteViewSet(viewsets.ModelViewSet):
         except Exception as e:
             db_logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SiteSettingsConfigViewSet(viewsets.ModelViewSet):
+    queryset = SiteSettingsConfig.objects.all()
+    serializer_class = SiteSettingsConfigSerializer
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # print("사이트 설정", serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            db_logger.exception(status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def list(self, request, *args, **kwargs):
+    #     try:
+    #         if request.GET.get('site') is not None:
+    #             site = request.GET.get('site')
+    #             if SiteSettingsConfig.objects.filter(site=site).exists():
+    #                 data = SiteSettingsConfig.objects.get(site=site)
+    #                 serializer = SiteSerializer(data)
+    #                 return Response(serializer.data, status=status.HTTP_200_OK)
+    #             else:
+    #                 db_logger.exception(status.HTTP_404_NOT_FOUND)
+    #                 return Response(status=status.HTTP_404_NOT_FOUND)
+    #         else:
+    #             data = Site.objects.all()
+    #             serializer = SiteSerializer(data, many=True)
+    #             return Response(serializer.data, status=status.HTTP_200_OK)
+    #     except Exception as e:
+    #         db_logger.exception(e)
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
