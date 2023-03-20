@@ -26,6 +26,12 @@ class CameraAdmin(admin.ModelAdmin):
         'serial_number', 'maximum_angle_roll', 'minimum_angle_roll', 'maximum_angle_pitch', 'minimum_angle_pitch',
         'maximum_angle_yaw', 'minimum_angle_yaw', 'zoom_magnification', 'night_vision', 'protocol')
 
+class OptionFilter(admin.SimpleListFilter):
+    title = ('options')
+    parameter_name = 'options'
+    
+    def lookups(self, request, model_admin):
+        return
 
 class MissiondeviceDataLogAdmin(admin.ModelAdmin):
     # date_hierarchy = "date"
@@ -34,7 +40,7 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
         'missiondevice_data_log_id', 'format_date', 'latitude', 'longitude', 'roll', 'pitch', 'yaw', 'camera_roll',
         'camera_pitch', 'camera_yaw', 'camera_zoom', 'pressure', 'temperature', 'voltage', 'kite_helium_pressure',
         'etc_senser', 'rssi', 'missiondevice_serial_number')
-    list_filter = ('missiondevice_serial_number', ('date', DateTimeRangeFilter),)
+    list_filter = ('missiondevice_serial_number', ('date', DateTimeRangeFilter), OptionFilter)
 
     def format_date(self, obj):
         obj.date = obj.date + timedelta(hours=9)
@@ -48,8 +54,12 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
         past_date = current_date - timedelta(hours=1)
         return past_date, current_date
 
+    def test(self):
+        return [f.name for f in MissiondeviceDataLog._meta.fields + MissiondeviceDataLog._meta.many_to_many]
+    
     def changelist_view(self, request, extra_context=None):
         try:
+            # print(self.test())
             response = super().changelist_view(request, extra_context=extra_context)
             queryset = response.context_data["cl"].queryset
             # print(queryset)
@@ -62,11 +72,17 @@ class MissiondeviceDataLogAdmin(admin.ModelAdmin):
                 current_date = datetime.today()
                 past_date = current_date - timedelta(hours=1)
 
+            get_option = request.GET.get("options")
+            if get_option is None:
+                get_option = 'camera_yaw'
+
             queryset = queryset.filter(date__range=(past_date, current_date))
-            date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F("camera_yaw")).order_by(
+            date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F(get_option)).order_by(
                 "-hour")
+            serial_number = Missiondevice.objects.values('serial_number')
             extra_context = {
                 "date": json.dumps(list(date), cls=DjangoJSONEncoder),
+                "serial_number": json.dumps(list(serial_number), cls=DjangoJSONEncoder),
                 # "column_keys": column_keys,
                 # "column_values": column_values
             }

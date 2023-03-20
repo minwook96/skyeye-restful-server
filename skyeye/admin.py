@@ -65,7 +65,15 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
                 date_time.append(second_time.split(':')[0])
                 date_time.append(second_time.split(':')[1])
                 # print(date_time)
-                
+        
+        # 선택한 임무장비 / 기본값 'test1'
+        get_serial = request.GET.get('options')
+        if get_serial is None:
+            # get_serial = Missiondevice.objects.values('serial_number')[1].values()
+            # get_serial = list(get_serial)[0]
+            # print(get_serial) # test1
+            get_serial = 'test1'
+
         current_date = datetime.today()
         past_date = current_date - timedelta(days=7)
         past_time = current_date - timedelta(hours=1)
@@ -82,19 +90,18 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
         # temperature = MissiondeviceDataLog.objects.filter(date__range=(past_date, current_date)).annotate(
         #     day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
 
-        
         # 카메라 롤,피치,요, 윈치 => 1시간전
         if (is_time_exist == False):
             temperature = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
                 day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
             camera_roll = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
             camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
             camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
             # print(camera_yaw)
             winch = WinchDataLog.objects.filter(date__range=(past_time, current_date)).annotate(
@@ -103,25 +110,26 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
             temperature = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
                 day=TruncMinute("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
             camera_roll = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
             camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
             camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number="test1").annotate(
+                                                            missiondevice_serial_number=get_serial).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
             # print(camera_yaw)
             winch = WinchDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("wind_speed")).order_by("-day")
+        serial_number = Missiondevice.objects.values('serial_number')
         extra_context = {
             "temperature": json.dumps(list(temperature), cls=DjangoJSONEncoder),
             "camera_roll": json.dumps(list(camera_roll), cls=DjangoJSONEncoder),
             "camera_pitch": json.dumps(list(camera_pitch), cls=DjangoJSONEncoder),
             "camera_yaw": json.dumps(list(camera_yaw), cls=DjangoJSONEncoder),
             "date2": json.dumps(list(winch), cls=DjangoJSONEncoder),
-            "date": json.dumps(list(date_list), cls=DjangoJSONEncoder)
-
+            "date": json.dumps(list(date_list), cls=DjangoJSONEncoder),
+            "serial_number": json.dumps(list(serial_number), cls=DjangoJSONEncoder),
         }
     except Exception as e:
         print(e)

@@ -15,9 +15,15 @@ class WinchAdmin(admin.ModelAdmin):
         'serial_number', 'primary_sensor', 'extended_sensor', 'tetherline_length', 'tetherline_limit_tension',
         'production_year')
 
+class OptionFilter(admin.SimpleListFilter):
+    title = ('options')
+    parameter_name = 'options'
+    
+    def lookups(self, request, model_admin):
+        return
 
 class WinchDataLogAdmin(admin.ModelAdmin):
-    date_hierarchy = "date"
+    # date_hierarchy = "date"
 
     # 관리자 화면에 보여질 칼럼 지정
     list_display = (
@@ -25,7 +31,7 @@ class WinchDataLogAdmin(admin.ModelAdmin):
         'main_power_electric_current', 'tetherline_electric_current', 'mechanical_brake_operation',
         'electronic_brake_operation', 'tetherline_length', 'tetherline_angle', 'tetherline_tension', 'pressure',
         'temperature', 'wind_direction', 'wind_speed', 'rain', 'rssi', 'winch_serial_number')
-    list_filter = ('winch_serial_number', ('date', DateTimeRangeFilter),)
+    list_filter = ('winch_serial_number', ('date', DateTimeRangeFilter), OptionFilter)
 
     def format_date(self, obj):
         obj.date = obj.date + timedelta(hours=9)
@@ -52,10 +58,15 @@ class WinchDataLogAdmin(admin.ModelAdmin):
                 current_date = datetime.today()
                 past_date = current_date - timedelta(hours=1)
 
+            get_option = request.GET.get("options")
+            if get_option is None:
+                get_option = 'wind_speed'
+
             # print(queryset)
             queryset = queryset.filter(date__range=(past_date, current_date))
-            date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F("wind_speed")).order_by(
+            date = queryset.annotate(hour=TruncSecond("date")).values("hour").annotate(y=F(get_option)).order_by(
                 "-hour")
+            serial_number = Winch.objects.values('serial_number')
             # column_mode = queryset.values("camera_roll").values('missiondevice_serial_number').annotate(
             #     camera_roll=F("camera_roll"))
             # print("x: ", date)
@@ -75,6 +86,7 @@ class WinchDataLogAdmin(admin.ModelAdmin):
             # )
             extra_context = {
                 "date": json.dumps(list(date), cls=DjangoJSONEncoder),
+                "serial_number": json.dumps(list(serial_number), cls=DjangoJSONEncoder),
                 # "column_keys": column_keys,
                 # "column_values": column_values
             }

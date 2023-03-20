@@ -4,18 +4,116 @@
 <!-- Override extrahead to add Chart.js -->
 {% block extrahead %}
 {{ block.super }}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.umd.js" integrity="sha512-vCUbejtS+HcWYtDHRF2T5B0BKwVG/CLeuew5uT2AiX4SJ2Wff52+kfgONvtdATqkqQMC9Ye5K+Td0OTaz+P7cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!--{{ date|json_script:"chart-data" }}-->
 <!--{{ column_keys|json_script:"chart-key" }}-->
 <!--{{ column_values|json_script:"chart-values" }}-->
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('myChart').getContext('2d');
+    $(function() {
+        const DateTime = luxon.DateTime;
+        const DATE = 0, TIME = 1;
 
+        let save_query = [];
+        let serial_number = "";
+        let options = "";
+
+        // URL에서 파라미터를 뽑아서 save_query 배열에 push
+        const searchParams = new URLSearchParams(location.search);
+        for (const param of searchParams) {
+            save_query.push(param);
+        }
+
+        // serial_number 셀렉트 박스에 가져온 임무장비 갯수만큼 추가
+        let arr_get_serial = {{ serial_number | safe }};
+        for (let i = 0; i < Object.keys(arr_get_serial).length; i++) {
+            $("#serial_number").append('<option value="' + arr_get_serial[i].serial_number + '">' + arr_get_serial[i].serial_number + '</option>');
+        }
+
+        // 오늘 날짜 => 연도 요일 / 현재 시간으로 분리 || 현재시간 - 1시간 빼기 
+        let today = DateTime.now().toFormat('yyyy-MM-dd HH:mm:ss').split(' ');
+        let minus_time = DateTime.now().minus({hours:1}).toFormat('HH:mm:ss');
+
+        // URL에 파라미터가 1개 이상이라면 파라미터에서 str 추출해서 셀렉트 박스 및 input에 집어넣음
+        if (save_query.length > 0) {
+            $("#serial_number").val(save_query[0][1]).attr("selected", true);
+            $("#options").val(save_query[1][1]).attr("selected", true);
+            $("#start_date").val(save_query[2][1]);
+            $("#start_time").val(save_query[3][1]);
+            $("#end_date").val(save_query[4][1]);
+            $("#end_time").val(save_query[5][1]);
+            serial_number = save_query[0][1];
+            options = save_query[1][1];
+        } else { // 파라미터가 없다면 현재시간 집어넣음
+            $("#start_date").val(today[DATE]);
+            $("#start_time").val(minus_time);
+            $("#end_date").val(today[DATE]);
+            $("#end_time").val(today[TIME]);
+        }
+
+        $(".select_today").click(function(e) {
+            e.preventDefault();
+            $(this).prev().val(today[DATE]);
+        });
+
+        $(".select_now").click(function(e) {
+            e.preventDefault();
+            $(this).prev().val(today[TIME]);
+        });
+
+        $("#serial_number").change(function() {
+            serial_number = $(this).val();
+        });
+        
+        $("#options").change(function() {
+            options = $(this).val();
+        });
+        
+        // Search 버튼 눌렀을 때 시리얼과 옵션 선택 여부 체크
+        $("#btn_submit").click(function() {
+            if (options == "" || serial_number == "") {
+                alert("Check your select");
+            } else {
+                $("#changelist-search").submit();
+            }
+        });
+        
+        // Reset 버튼 누르면 아래 지정된 시간으로 초기화
+        $("#btn_reset").click(function() {
+            let reset_date = '2023-02-27';
+            let reset_time = DateTime.now().set({hours: 11, minutes: 0, seconds: 0});
+            $("#start_date").attr('value', reset_date);
+            $("#start_time").attr('value', reset_time.minus({hours: 1}).toFormat('HH:mm:ss'));
+            $("#end_date").attr('value', reset_date);
+            $("#end_time").attr('value', reset_time.toFormat('HH:mm:ss'));
+        });
+
+        /// 차트 부분
+        // =====================================================================================
+        // 차트 라벨 바꾸기
+        // URL에서 특정 이름의 파라미터 빼내는 함수
+        $.urlParam = function(name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null) {
+                return null;
+            } else {
+                return results[1] || 0;
+            }
+        }
+        // 차트 기본 라벨 설정
+        let label_text = "camera_yaw";
+        // URL에 options 파라미터가 있다면 차트 라벨 변경
+        if ($.urlParam('options') != null) label_text = $.urlParam('options');
+        // =====================================================================================
+
+        const ctx = document.getElementById('myChart').getContext('2d');
         // Sample data
         const chartData = {{ date | safe }};
-
+        // console.log(chartData);
         // const chartData = JSON.parse(document.getElementById("chart-data").textContent);
         // const chartKey = JSON.parse(document.getElementById("chart-key").textContent);
         // const chartValue = JSON.parse(document.getElementById("chart-values").textContent);
@@ -27,6 +125,7 @@
         //     d.x = new Date(d.date);
         //     console.log(d)
         // });
+
         chartData.forEach((d) => {
             d.x = new Date(d.hour);
             // console.log(d)
@@ -37,47 +136,49 @@
             type: 'line',
             data: {
                 datasets: [
-                    {
-                        label: "camera_yaw",
-                        data: chartData,
-                        fill: false,
-                        backgroundColor: 'rgba(33,150,243,0.5)',
+                    { 
+                    label: label_text,
+                    data: chartData,
+                    fill: false,
+                    backgroundColor: 'rgba(33,150,243,0.5)',
                     },
                 ],
             },
             options: {
                 responsive: true,
                 scales: {
-                    xAxes: [
-                        {
-                            type: 'time',
-                            time: {
-                                displayFormats: {
-                                    second: 'MMM D, h:mm:ss a',
-                                },
+                    x:  {
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                hour: 'h a',
+                                minute: 'h:mm a',
+                                second: 'h:mm:ss a',
                             },
                         },
-                    ],
-                    yAxes: [
-                        {
-                            ticks: {
-                                // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
-                                beginAtZero: false,
-                            },
+                    },
+                    y:  {
+                        ticks: {
+                            // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
+                            beginAtZero: false,
                         },
-                    ],
+                    },
                 },
             },
         });
     });
+
+
 </script>
 {% endblock %}
 
 {% block content %}
 <!-- Render our chart -->
-<div style="width: 90%;">
+<div class="mb-3" style="width: 90%;">
     <canvas style="margin-bottom: 30px; width: 100%; height: 120%;" id="myChart"></canvas>
 </div>
+
 <!-- Render the rest of the ChangeList view -->
 {{ block.super }}
+
 {% endblock %}
