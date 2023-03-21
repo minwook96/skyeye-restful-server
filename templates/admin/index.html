@@ -37,14 +37,14 @@
         const chartData_pitch = {{ camera_pitch | safe }};
         const chartData_yaw = {{ camera_yaw | safe }};
         const chartData2 = {{ date2 | safe }};
-        let arr_get_serial = {{ serial_number | safe }};
+        let arr_get_serial = {{ site_name | safe }};
 
         const DateTime = luxon.DateTime;
         // 받아온 date 데이터 날짜 계산 => luxon
         // https://moment.github.io/luxon/index.html
 
         const CREATE_YEAR = 1, CREATE_MONTH = 3, CREATE_DAY = 4;
-        const DEFAULT_OPTION = arr_get_serial[1].serial_number;
+        const DEFAULT_OPTION = arr_get_serial[1]["name"];
         let save_query = "";
         let query_result = get_query();
         let query_length = Object.keys(query_result).length;
@@ -264,19 +264,19 @@
             }
         }
 
-        // serial_number 셀렉트 박스에 가져온 임무장비 갯수만큼 추가
+        // site_name 셀렉트 박스에 가져온 임무장비 갯수만큼 추가
         for (let i = 0; i < Object.keys(arr_get_serial).length; i++) {
-            $("#serial_number").append('<option value="' + arr_get_serial[i].serial_number + '">' + arr_get_serial[i].serial_number + '</option>');
+            $("#site_name").append('<option value="' + arr_get_serial[i]["name"] + '">' + arr_get_serial[i]["name"] + '</option>');
         }
         
         // 대시보드 임무장비 변경할 때 해당 임무장비 경로로 리다이렉트 (?options=임무장비명)
-        let serial_number = "";
-        $("#serial_number").change(function() {
+        let site_name = "";
+        $("#site_name").change(function() {
             // console.log($(this).val());
-            let serial_number = $(this).val();
-            // $("#prev_date").attr("href", "?options=" + serial_number);
+            let site_name = $(this).val();
+            // $("#prev_date").attr("href", "?options=" + site_name);
             // $(".added_button")
-            location.href = `?options=${serial_number}`;
+            location.href = `?options=${site_name}`;
         });
 
         // URL 쿼리 스트링에서 ?options 값 가져오기
@@ -285,10 +285,10 @@
         // URL에 options가 없으면 test1 선택 / 있으면 선택내역 저장
         if (OPTION_PARAMETER == null) {
             options = DEFAULT_OPTION;
-            $("#serial_number").val(DEFAULT_OPTION).attr('selected', true);
+            $("#site_name").val(DEFAULT_OPTION).attr('selected', true);
         } else {
             options = OPTION_PARAMETER;
-            $("#serial_number").val(OPTION_PARAMETER).attr('selected', true);
+            $("#site_name").val(OPTION_PARAMETER).attr('selected', true);
         }
 
         // 날짜 계산 => 연/월/일 분리
@@ -467,11 +467,11 @@
 
 <div class="col-lg-9 col-12" style="margin-bottom: 4rem">
     <!-- 대시보드 필터 부분 -->
-    <h5>Select Mission Device</h5>
+    <h5>Select Site</h5>
     <div class="col-12 pb-4" id="change-list-date-hierarchy">
         <!-- 임무장비 선택 부분 -->
-        <select name="missiondevice_serial_number" id="serial_number" class="form-control mb-2" style="width: 95%;">
-            <option value="">Select Device</option>
+        <select name="site_site_name" id="site_name" class="form-control mb-2" style="width: 95%;">
+            <option value="">Select Site</option>
             <option value="">--------------</option>
         </select>
         <!-- 임무장비 선택 부분 end -->

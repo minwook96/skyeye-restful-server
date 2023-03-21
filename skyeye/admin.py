@@ -20,18 +20,20 @@ class SiteAdmin(admin.ModelAdmin):
     list_display = (
         'site_id', 'name', 'installation_date', 'helikite_serial_number', 'gcs_serial_number',
         'missiondevice_serial_number', 'winch_serial_number')
-        
+
+
 origin_index = admin.site.index  # 원래의 index view 함수를 저장해 놓음
+
 
 def check_date(year, month, day, time):
     target_date = year + "-" + month
     past_date = datetime.strptime(target_date, '%Y-%m')
-    if day == None:
+    if day is None:
         day = 1
         last_day = calendar.monthrange(past_date.year, past_date.month)[1]
         last_date = past_date.replace(day=last_day)
         date_list = [past_date, last_date]
-    elif day != None and len(time) == 0:
+    elif day is not None and len(time) == 0:
         target_date = year + "-" + month + "-" + day
         past_date = datetime.strptime(target_date, '%Y-%m-%d')
         date_list = [past_date, past_date + timedelta(days=1)]
@@ -42,7 +44,7 @@ def check_date(year, month, day, time):
         second_time = datetime.strptime(str_second_time, '%Y-%m-%d %H:%M')
         date_list = [first_time, second_time]
     return date_list
-    
+
 
 def index(request, extra_context=None):  # 사용자 정의 index 선언
     try:
@@ -65,14 +67,20 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
                 date_time.append(second_time.split(':')[0])
                 date_time.append(second_time.split(':')[1])
                 # print(date_time)
-        
+
         # 선택한 임무장비 / 기본값 'test1'
-        get_serial = request.GET.get('options')
-        if get_serial is None:
+        site_name = request.GET.get('options')
+        if site_name is None:
             # get_serial = Missiondevice.objects.values('serial_number')[1].values()
             # get_serial = list(get_serial)[0]
             # print(get_serial) # test1
-            get_serial = 'test1'
+            missiondevice_serial_number = 'test1'
+            winch_serial_number = 'test1'
+        else:
+            missiondevice_serial_number = Site.objects.filter(name=site_name).values("missiondevice_serial_number")
+            winch_serial_number = Site.objects.filter(name=site_name).values("winch_serial_number")
+            missiondevice_serial_number = missiondevice_serial_number[0]["missiondevice_serial_number"]
+            winch_serial_number = winch_serial_number[0]["winch_serial_number"]
 
         current_date = datetime.today()
         past_date = current_date - timedelta(days=7)
@@ -83,7 +91,7 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
 
         # 버튼 안눌렀으면 [1월 1일, 현재날짜] / 눌렀으면 [해당월 1일, 마지막일]
         date_list = [past_date, current_date]
-        if date_year != None:
+        if date_year is not None:
             date_list = check_date(date_year, date_month, date_day, date_time)
 
         # 온도 => 일주일전
@@ -91,37 +99,40 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
         #     day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
 
         # 카메라 롤,피치,요, 윈치 => 1시간전
-        if (is_time_exist == False):
-            temperature = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
+        if is_time_exist is False:
+            temperature = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
+                                                              missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncHour("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
             camera_roll = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                              missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
             camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                               missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
             camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(past_time, current_date),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                             missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
             # print(camera_yaw)
-            winch = WinchDataLog.objects.filter(date__range=(past_time, current_date)).annotate(
+            winch = WinchDataLog.objects.filter(date__range=(past_time, current_date),
+                                                winch_serial_number=winch_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("wind_speed")).order_by("-day")
-        elif (is_time_exist == True):
+        else:
             temperature = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
                 day=TruncMinute("date")).values("day").annotate(y=Avg("temperature")).order_by("-day")
             camera_roll = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                              missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_roll")).order_by("-day")
             camera_pitch = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                               missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_pitch")).order_by("-day")
             camera_yaw = MissiondeviceDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
-                                                            missiondevice_serial_number=get_serial).annotate(
+                                                             missiondevice_serial_number=missiondevice_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("camera_yaw")).order_by("-day")
             # print(camera_yaw)
-            winch = WinchDataLog.objects.filter(date__range=(date_list[0], date_list[1])).annotate(
+            winch = WinchDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
+                                                winch_serial_number=winch_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("wind_speed")).order_by("-day")
-        serial_number = Missiondevice.objects.values('serial_number')
+        site_name = Site.objects.values('name')
         extra_context = {
             "temperature": json.dumps(list(temperature), cls=DjangoJSONEncoder),
             "camera_roll": json.dumps(list(camera_roll), cls=DjangoJSONEncoder),
@@ -129,7 +140,7 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
             "camera_yaw": json.dumps(list(camera_yaw), cls=DjangoJSONEncoder),
             "date2": json.dumps(list(winch), cls=DjangoJSONEncoder),
             "date": json.dumps(list(date_list), cls=DjangoJSONEncoder),
-            "serial_number": json.dumps(list(serial_number), cls=DjangoJSONEncoder),
+            "site_name": json.dumps(list(site_name), cls=DjangoJSONEncoder),
         }
     except Exception as e:
         print(e)
