@@ -69,18 +69,20 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
                 # print(date_time)
 
         # 선택한 임무장비 / 기본값 'test1'
-        site_name = request.GET.get('options')
-        if site_name is None:
+        site_id = request.GET.get('options')
+        print(site_id)
+        if site_id is None:
             # get_serial = Missiondevice.objects.values('serial_number')[1].values()
             # get_serial = list(get_serial)[0]
             # print(get_serial) # test1
             missiondevice_serial_number = 'test1'
             winch_serial_number = 'test1'
         else:
-            missiondevice_serial_number = Site.objects.filter(name=site_name).values("missiondevice_serial_number")
-            winch_serial_number = Site.objects.filter(name=site_name).values("winch_serial_number")
+            missiondevice_serial_number = Site.objects.filter(site_id=site_id).values("missiondevice_serial_number")
+            winch_serial_number = Site.objects.filter(site_id=site_id).values("winch_serial_number")
             missiondevice_serial_number = missiondevice_serial_number[0]["missiondevice_serial_number"]
             winch_serial_number = winch_serial_number[0]["winch_serial_number"]
+            # print(missiondevice_serial_number, winch_serial_number)
 
         current_date = datetime.today()
         past_date = current_date - timedelta(days=7)
@@ -132,7 +134,8 @@ def index(request, extra_context=None):  # 사용자 정의 index 선언
             winch = WinchDataLog.objects.filter(date__range=(date_list[0], date_list[1]),
                                                 winch_serial_number=winch_serial_number).annotate(
                 day=TruncSecond("date")).values("day").annotate(y=F("wind_speed")).order_by("-day")
-        site_name = Site.objects.values('name')
+        site_name = Site.objects.values('site_id', 'name')
+        # print(site_name)
         extra_context = {
             "temperature": json.dumps(list(temperature), cls=DjangoJSONEncoder),
             "camera_roll": json.dumps(list(camera_roll), cls=DjangoJSONEncoder),

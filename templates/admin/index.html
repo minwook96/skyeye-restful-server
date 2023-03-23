@@ -38,13 +38,12 @@
         const chartData_yaw = {{ camera_yaw | safe }};
         const chartData2 = {{ date2 | safe }};
         let arr_get_serial = {{ site_name | safe }};
-
         const DateTime = luxon.DateTime;
         // 받아온 date 데이터 날짜 계산 => luxon
         // https://moment.github.io/luxon/index.html
 
         const CREATE_YEAR = 1, CREATE_MONTH = 3, CREATE_DAY = 4;
-        const DEFAULT_OPTION = arr_get_serial[1]["name"];
+        const DEFAULT_OPTION = arr_get_serial[1]["site_id"];
         let save_query = "";
         let query_result = get_query();
         let query_length = Object.keys(query_result).length;
@@ -266,7 +265,8 @@
 
         // site_name 셀렉트 박스에 가져온 임무장비 갯수만큼 추가
         for (let i = 0; i < Object.keys(arr_get_serial).length; i++) {
-            $("#site_name").append('<option value="' + arr_get_serial[i]["name"] + '">' + arr_get_serial[i]["name"] + '</option>');
+            console.log(arr_get_serial[i]);
+            $("#site_name").append('<option value="' + arr_get_serial[i]["site_id"] + '">' + arr_get_serial[i]["name"] + '</option>');
         }
         
         // 대시보드 임무장비 변경할 때 해당 임무장비 경로로 리다이렉트 (?options=임무장비명)
@@ -290,6 +290,7 @@
             options = OPTION_PARAMETER;
             $("#site_name").val(OPTION_PARAMETER).attr('selected', true);
         }
+        console.log(options);
 
         // 날짜 계산 => 연/월/일 분리
         const month_name = ["January","February","March","April","May","June","July","August","September","October","November","December"];
