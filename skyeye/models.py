@@ -29,12 +29,8 @@ class SiteSettingsConfig(models.Model):
     missiondevice_altitude_low = models.FloatField(blank=True, null=True, help_text='임무장치 고도 하한')
     missiondevice_voltage_high = models.FloatField(blank=True, null=True, help_text='임무장치 전압 상한')
     missiondevice_voltage_low = models.FloatField(blank=True, null=True, help_text='임무장치 전압 하한')
-    winch_tetherline_length_high = models.FloatField(blank=True, null=True, help_text='윈치 티더선 길이 상한')
-    winch_tetherline_length_low = models.FloatField(blank=True, null=True, help_text='윈치 티더선 길이 하한')
     winch_tetherline_angle_high = models.FloatField(blank=True, null=True, help_text='윈치 티더선 각도 상한')
     winch_tetherline_angle_low = models.FloatField(blank=True, null=True, help_text='윈치 티더선 각도 하한')
-    winch_tetherline_tension_high = models.FloatField(blank=True, null=True, help_text='윈치 티더선 장력 상한')
-    winch_tetherline_tension_low = models.FloatField(blank=True, null=True, help_text='윈치 티더선 장력 하한')
     winch_wind_speed_high = models.FloatField(blank=True, null=True, help_text='풍속 상한')
     winch_wind_speed_low = models.FloatField(blank=True, null=True, help_text='풍속 하한')
 
