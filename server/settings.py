@@ -197,11 +197,18 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+# 주의할 점. STATIC_ROOT 경로는 STATICFILES_DIRS 등록된 경로와 같은 경로가 있어서는 안 됩니다. 남들이 잘 안 쓸만한 이상한 이름(staticfiles?)을 쓰세요.
+# https://blog.hannal.com/2015/04/start_with_django_webframework_06/
+# => (staticfiles.E002) The STATICFILES_DIRS setting should not contain the STATIC_ROOT setting.
 STATIC_URL = '/static/'
-STATICFILE_DIRS = (
-    os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
 )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# collectstatic 경로 / Debug = True 일때 작동안함
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

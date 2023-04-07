@@ -14,154 +14,17 @@
 <!--{{ date|json_script:"chart-data" }}-->
 <!--{{ column_keys|json_script:"chart-key" }}-->
 <!--{{ column_values|json_script:"chart-values" }}-->
+<script src="{% static 'admin/js/logs_chart.js' %}"></script>
 <script>
     $(function() {
-        const DateTime = luxon.DateTime;
-        const DATE = 0, TIME = 1;
-
-        let save_query = [];
-        let serial_number = "";
-        let options = "";
-
-        const searchParams = new URLSearchParams(location.search);
-        for (const param of searchParams) {
-            save_query.push(param);
-        }
-
-        let arr_get_serial = {{ serial_number | safe }};
-        for (let i = 0; i < Object.keys(arr_get_serial).length; i++) {
-            $("#serial_number").append('<option value="' + arr_get_serial[i].serial_number + '">' + arr_get_serial[i].serial_number + '</option>');
-        }
-
-        let today = DateTime.now().toFormat('yyyy-MM-dd HH:mm:ss').split(' ');
-        let minus_time = DateTime.now().minus({hours:1}).toFormat('HH:mm:ss');
-
-        if (save_query.length > 0) {
-            $("#serial_number").val(save_query[0][1]).attr("selected", true);
-            $("#options").val(save_query[1][1]).attr("selected", true);
-            $("#start_date").val(save_query[2][1]);
-            $("#start_time").val(save_query[3][1]);
-            $("#end_date").val(save_query[4][1]);
-            $("#end_time").val(save_query[5][1]);
-            serial_number = save_query[0][1];
-            options = save_query[1][1];
-        } else {
-            $("#start_date").val(today[DATE]);
-            $("#start_time").val(minus_time);
-            $("#end_date").val(today[DATE]);
-            $("#end_time").val(today[TIME]);
-        }
-
-        $(".select_today").click(function(e) {
-            e.preventDefault();
-            $(this).prev().val(today[DATE]);
-        });
-
-        $(".select_now").click(function(e) {
-            e.preventDefault();
-            $(this).prev().val(today[TIME]);
-        });
-
-        $("#serial_number").change(function() {
-            serial_number = $(this).val();
-        });
-        
-        $("#options").change(function() {
-            options = $(this).val();
-        });
-        
-        $("#btn_submit").click(function() {
-            if (options == "" || serial_number == "") {
-                alert("옵션 확인");
-            } else {
-                $("#changelist-search").submit();
-            }
-        });
-
-        $("#btn_reset").click(function() {
-            let reset_date = '2023-02-27';
-            let reset_time = DateTime.now().set({hours: 11, minutes: 0, seconds: 0});
-            $("#start_date").attr('value', reset_date);
-            $("#start_time").attr('value', reset_time.minus({hours: 1}).toFormat('HH:mm:ss'));
-            $("#end_date").attr('value', reset_date);
-            $("#end_time").attr('value', reset_time.toFormat('HH:mm:ss'));
-        });
-
-        // 차트 부분
-        $.urlParam = function(name) {
-            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-            if (results==null) {
-                return null;
-            } else {
-                return results[1] || 0;
-            }
-        }
+        // 차트 기본 라벨 설정
         let label_text = "wind_speed";
-        if ($.urlParam('options') != null) label_text = $.urlParam('options');
 
-        // 차트 부분
-        const ctx = document.getElementById('myChart').getContext('2d');
-
-        // Sample data
-        const chartData = {{ date | safe }};
-
-        // const chartData = JSON.parse(document.getElementById("chart-data").textContent);
-        // const chartKey = JSON.parse(document.getElementById("chart-key").textContent);
-        // const chartValue = JSON.parse(document.getElementById("chart-values").textContent);
-
-        // console.log(chartData);
-
-        // Parse the dates to JS
-        // Object.keys(chartData).forEach(d => {
-        //     d.x = new Date(d.date);
-        //     console.log(d)
-        // });
-        chartData.forEach((d) => {
-            d.x = new Date(d.hour);
-            // console.log(d)
-        });
-
-        // Render the chart
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                datasets: [
-                    {
-                        label: label_text,
-                        data: chartData,
-                        fill: false,
-                        backgroundColor: 'rgba(33,150,243,0.5)',
-                        // yAxisID: 'y',
-                    },
-                    // {
-                    //     label: 'Dataset 2',
-                    //     data: chartValue,
-                    //     backgroundColor: 'rgba(0,200,0,0.5)',
-                    //     yAxisID: 'y1',
-                    // }
-                ],
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                            type: 'time',
-                            time: {
-                                displayFormats: {
-                                    hour: 'h a',
-                                    minute: 'h:mm a',
-                                    second: 'h:mm:ss a',
-                                },
-                            },
-                        },
-                    y: {
-                            ticks: {
-                                // ⑬시작을 0부터 하게끔 설정(최소값이 0보다 크더라도)(boolean)
-                                beginAtZero: false,
-                            },
-                        },
-                },
-            },
+        var create_table = Object.create(create_table_module);
+        create_table.init({
+            serial_number: {{ serial_number | safe }},
+            date: {{ date | safe }},
+            label_text: label_text
         });
     });
 </script>
